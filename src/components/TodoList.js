@@ -1,40 +1,63 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { Container, List, ListItem, ListItemText, IconButton, TextField, Button } from '@mui/material';
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { useTodos } from './TodoContext';
 
 const TodoList = () => {
-  const [todos, setTodos] = useState([]);
-  const [newTodo, setNewTodo] = useState('');
-  const [editTodoId, setEditTodoId] = useState(null);
-  const [editTodoText, setEditTodoText] = useState('');
+  const { todos, setTodos, editTodoId, setEditTodoId, editTodoText, setEditTodoText } = useTodos();
+  const todosCollectionRef = collection(db, 'todos');
 
   useEffect(() => {
-    const fetchTodos = async () => {
-      const querySnapshot = await getDocs(collection(db, 'todos'));
-      const todosData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setTodos(todosData);
+    const getTodos = async () => {
+      try {
+        const data = await getDocs(todosCollectionRef);
+        setTodos(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      } catch (error) {
+        console.error("Error fetching todos:", error);
+      }
     };
 
-    fetchTodos();
-  }, []);
+    getTodos();
+  }, [todosCollectionRef, setTodos]);
 
-  const handleAddTodo = async () => {
-    if (newTodo.trim() !== '') {
-      await addDoc(collection(db, 'todos'), { text: newTodo });
-      setNewTodo('');
-      const querySnapshot = await getDocs(collection(db, 'todos'));
-      const todosData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setTodos(todosData);
+  const createTodo = async (todo) => {
+    try {
+      await addDoc(todosCollectionRef, todo);
+      setTodos((prevTodos) => [...prevTodos, todo]); // Update state optimistically
+    } catch (error) {
+      console.error("Error creating todo:", error);
     }
   };
 
-  const handleDeleteTodo = async (id) => {
-    await deleteDoc(doc(db, 'todos', id));
-    const updatedTodos = todos.filter(todo => todo.id !== id);
-    setTodos(updatedTodos);
+  const updateTodo = async (id, updatedTodo) => {
+    try {
+      const todoDoc = doc(db, 'todos', id);
+      await updateDoc(todoDoc, updatedTodo);
+      setTodos((prevTodos) => prevTodos.map(todo => todo.id === id ? { ...todo, ...updatedTodo } : todo)); // Update state optimistically
+    } catch (error) {
+      console.error("Error updating todo:", error);
+    }
+  };
+
+  const deleteTodo = async (id) => {
+    try {
+      const todoDoc = doc(db, 'todos', id);
+      await deleteDoc(todoDoc);
+      setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== id)); // Update state optimistically
+    } catch (error) {
+      console.error("Error deleting todo:", error);
+    }
+  };
+
+  const [newTodo, setNewTodo] = useState('');
+
+  const handleAddTodo = () => {
+    createTodo({ text: newTodo });
+    setNewTodo('');
   };
 
   const handleEditTodo = (id, text) => {
@@ -42,15 +65,14 @@ const TodoList = () => {
     setEditTodoText(text);
   };
 
-  const handleUpdateTodo = async () => {
-    if (editTodoText.trim() !== '') {
-      await updateDoc(doc(db, 'todos', editTodoId), { text: editTodoText });
-      setEditTodoId(null);
-      setEditTodoText('');
-      const querySnapshot = await getDocs(collection(db, 'todos'));
-      const todosData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setTodos(todosData);
-    }
+  const handleUpdateTodo = () => {
+    updateTodo(editTodoId, { text: editTodoText });
+    setEditTodoId(null);
+    setEditTodoText('');
+  };
+
+  const handleDeleteTodo = (id) => {
+    deleteTodo(id);
   };
 
   return (
