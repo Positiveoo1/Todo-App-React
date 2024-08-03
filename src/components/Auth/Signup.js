@@ -1,29 +1,39 @@
-import React, { useState } from 'react';
-import { useAuth } from './AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { Container, TextField, Button, IconButton, InputAdornment } from '@mui/material';
-import { Visibility, VisibilityOff, Email } from '@mui/icons-material';
+import React, { useState } from "react";
+import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  TextField,
+  Button,
+  IconButton,
+  InputAdornment,
+  Stack,
+} from "@mui/material";
+import { Visibility, VisibilityOff, Email } from "@mui/icons-material";
+import LockIcon from '@mui/icons-material/Lock';
 
 const Signup = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState('');
+  const [passwordError, setPasswordError] = useState("");
   const { signup } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validatePassword(password)) {
-      setPasswordError(`Password must be at least 8 characters long, include one capital letter, one small letter, and one unique sign.`);
+      setPasswordError(
+        `Password must be at least 8 characters long, include one capital letter, one small letter, and one unique sign.`
+      );
       return;
     }
-    setPasswordError('');
+    setPasswordError("");
     try {
       await signup(email, password);
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Failed to sign up:', error);
+      console.error("Failed to sign up:", error);
     }
   };
 
@@ -32,13 +42,19 @@ const Signup = () => {
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    return password.length >= minLength && hasUpperCase && hasLowerCase && hasSpecialChar;
+    return (
+      password.length >= minLength &&
+      hasUpperCase &&
+      hasLowerCase &&
+      hasSpecialChar
+    );
   };
 
   const handleClickShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
+  const loginPage = () => navigate("/login");
   return (
     <Container>
       <h2>Sign Up</h2>
@@ -59,7 +75,7 @@ const Signup = () => {
         />
         <TextField
           label="Password"
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           fullWidth
           margin="normal"
           value={password}
@@ -67,6 +83,11 @@ const Signup = () => {
           error={!!passwordError}
           helperText={passwordError}
           InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LockIcon />
+              </InputAdornment>
+            ),
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
@@ -80,9 +101,20 @@ const Signup = () => {
             ),
           }}
         />
-        <Button variant="contained" color="primary" type="submit">
-          Sign Up
-        </Button>
+
+        <Stack spacing={2} direction={"row"}>
+          <Button variant="contained" color="primary" type="submit">
+            Sign Up
+          </Button>
+          <Button
+            variant="text"
+            color="primary"
+            type="submit"
+            onClick={loginPage}
+          >
+            Log in?
+          </Button>
+        </Stack>
       </form>
     </Container>
   );
