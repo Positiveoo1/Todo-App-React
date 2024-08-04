@@ -1,0 +1,38 @@
+/* src/components/Loading.css */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+  }
+  
+  .loading-circle {
+    color: #3f51b5; /* Change the color as needed */
+    animation: spin 2s linear infinite;
+  }
+  
+  .loading-icon {
+    color: #ff9800; /* Change the color as needed */
+    position: absolute;
+    animation: bounce 1s ease-in-out infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(-20%);
+    }
+    50% {
+      transform: translateY(20%);
+    }
+  }
+  
