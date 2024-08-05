@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase'; // Adjust the import path as needed
+import { db } from '../firebase'; 
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { Container, List, ListItem, ListItemText, IconButton, TextField, Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -101,3 +101,4 @@ const TodoList = () => {
 };
 
 export default TodoList;
+
