@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './Auth/AuthContext';
 import { AppBar, Toolbar, Typography, Button, useMediaQuery, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
@@ -7,6 +7,7 @@ import ListIcon from '@mui/icons-material/List';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SignupIcon from '@mui/icons-material/PersonAdd';
+
 import './Navbar.css'
 const Navbar = () => {
   const { currentUser, logout } = useAuth();
@@ -21,13 +22,15 @@ const Navbar = () => {
       console.error("Failed to log out:", error);
     }
   };
+  const navigate = useNavigate();
+  const navigatedH = () => navigate("/");
 
   return (
     <>
       {!isMobile ? (
         <AppBar position="static">
           <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} onClick={navigatedH} style={{cursor: 'pointer'}}>
               Todo List App
             </Typography>
             <Button component={Link} to="/" color="inherit">

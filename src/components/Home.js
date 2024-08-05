@@ -1,10 +1,10 @@
 import React from 'react';
 import { Container, Typography } from '@mui/material';
-
 const Home = () => {
+ 
   return (
     <Container>
-      <Typography variant="h2" component="h1" gutterBottom>
+      <Typography variant="h2" component="h1" gutterBottom >
         Welcome to the To-Do List App
       </Typography>
       <Typography variant="body1">
