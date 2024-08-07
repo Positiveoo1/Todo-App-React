@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './Auth/AuthContext';
-import { useTheme } from '../components/ThemeContext'; // Adjust the import path as needed
+import { useTheme } from '../components/ThemeContext'; 
 
 import { AppBar, Toolbar, Typography, Button, useMediaQuery, IconButton, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
