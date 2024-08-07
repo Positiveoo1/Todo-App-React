@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './Auth/AuthContext';
-import { AppBar, Toolbar, Typography, Button, useMediaQuery, BottomNavigation, BottomNavigationAction } from '@mui/material';
+import {useTheme} from '../components/ThemeContext';
+
+import { AppBar, Toolbar, Typography, Button, useMediaQuery,IconButton, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import ListIcon from '@mui/icons-material/List';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SignupIcon from '@mui/icons-material/PersonAdd';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+
 
 import './Navbar.css'
 const Navbar = () => {
@@ -14,6 +19,8 @@ const Navbar = () => {
   const location = useLocation();
   const isMobile = useMediaQuery('(max-width:600px)');
   const [value, setValue] = useState(location.pathname);
+  const { mode, toggleTheme } = useTheme();
+
 
   const handleLogout = async () => {
     try {
@@ -55,6 +62,9 @@ const Navbar = () => {
                 </Button>
               </>
             )}
+            <IconButton edge="end" color="inherit" onClick={toggleTheme}>
+          {mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+        </IconButton>
           </Toolbar>
         </AppBar>
       ) : (
