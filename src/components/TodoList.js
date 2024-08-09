@@ -1,16 +1,24 @@
-
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase'; 
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
-import { Container, List, ListItem, ListItemText, IconButton, TextField, Button } from '@mui/material';
+import { Container, List, ListItem, ListItemText, IconButton, TextField, Button, Snackbar } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import AddTaskIcon from '@mui/icons-material/AddTask';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
   const [editTodoId, setEditTodoId] = useState(null);
   const [editTodoText, setEditTodoText] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const todosCollectionRef = collection(db, 'todos');
 
@@ -24,17 +32,23 @@ const TodoList = () => {
   }, [todosCollectionRef]);
 
   const createTodo = async (text) => {
-    await addDoc(todosCollectionRef, { text });
+    await addDoc(todosCollectionRef, { text, completed: false });
+    setSnackbarMessage('Task added successfully');
+    setSnackbarOpen(true);
   };
 
-  const updateTodo = async (id, text) => {
+  const updateTodo = async (id, updatedFields) => {
     const todoDoc = doc(db, 'todos', id);
-    await updateDoc(todoDoc, { text });
+    await updateDoc(todoDoc, updatedFields);
+    setSnackbarMessage('Task updated successfully');
+    setSnackbarOpen(true);
   };
 
   const deleteTodo = async (id) => {
     const todoDoc = doc(db, 'todos', id);
     await deleteDoc(todoDoc);
+    setSnackbarMessage('Task deleted successfully');
+    setSnackbarOpen(true);
   };
 
   const handleAddTodo = () => {
@@ -48,13 +62,26 @@ const TodoList = () => {
   };
 
   const handleUpdateTodo = () => {
-    updateTodo(editTodoId, editTodoText);
+    updateTodo(editTodoId, { text: editTodoText });
     setEditTodoId(null);
     setEditTodoText('');
   };
 
   const handleDeleteTodo = (id) => {
     deleteTodo(id);
+  };
+
+  const toggleCompleteTodo = (todo) => {
+    const newStatus = !todo.completed;
+    updateTodo(todo.id, { completed: newStatus });
+
+    // Show a notification when the task status is changed
+    setSnackbarMessage(newStatus ? 'Task marked as completed' : 'Task marked as not completed');
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -71,8 +98,17 @@ const TodoList = () => {
       </Button>
       <List>
         {todos.map((todo) => (
-          <ListItem key={todo.id}>
+          <ListItem
+            key={todo.id}
+            style={{
+              textDecoration: todo.completed ? 'line-through' : 'none',
+              color: todo.completed ? 'green' : 'red',
+            }}
+          >
             <ListItemText primary={todo.text} />
+            <IconButton edge="end" onClick={() => toggleCompleteTodo(todo)}>
+              {todo.completed ? <RemoveCircleOutlineIcon /> : <AddTaskIcon />}
+            </IconButton>
             <IconButton edge="end" onClick={() => handleEditTodo(todo.id, todo.text)}>
               <EditIcon />
             </IconButton>
@@ -96,9 +132,19 @@ const TodoList = () => {
           </Button>
         </div>
       )}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
 
 export default TodoList;
-
