@@ -10,6 +10,7 @@ import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 import Navbar from "./components/Navbar";
 import TodoList from "./components/TodoList";
+import CheckConnection from "./components/CheckConnection";
 
 import "./App.css";
 
@@ -26,6 +27,7 @@ function App() {
     return <Loading />;
   }
   return (
+    <CheckConnection>
     <ThemeProvider>
       <AuthProvider>
         <TodoProvider>
@@ -48,6 +50,8 @@ function App() {
         </TodoProvider>
       </AuthProvider>
     </ThemeProvider>
+    </CheckConnection>
+
   );
 }
 
