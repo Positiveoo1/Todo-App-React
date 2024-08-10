@@ -11,6 +11,7 @@ import Signup from "./components/Auth/Signup";
 import Navbar from "./components/Navbar";
 import TodoList from "./components/TodoList";
 import CheckConnection from "./components/CheckConnection";
+import addNotification from "react-push-notification";
 
 import "./App.css";
 
