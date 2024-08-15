@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './Auth/AuthContext';
 import { useTheme } from '../components/ThemeContext'; 
+import './Navbar.css';
 
 import { AppBar, Toolbar, Typography, Button, useMediaQuery, IconButton, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
@@ -12,7 +13,6 @@ import SignupIcon from '@mui/icons-material/PersonAdd';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 
-import './Navbar.css';
 
 const Navbar = () => {
   const { currentUser, logout } = useAuth();
@@ -77,7 +77,7 @@ const Navbar = () => {
             setValue(newValue);
           }}
           showLabels
-          sx={{ width: '100%', position: 'fixed', bottom: 0 }}
+          sx={{ width: '100%', position: 'fixed', bottom: 0, zIndex: '1000' }}
         >
           <BottomNavigationAction
             label="Home"
